@@ -1,0 +1,3 @@
+# Support module definitions
+ASYN=       $(SUPPORT)/asyn/4-41dls2
+STREAMS=    $(SUPPORT)/streamDevice/2-5dls14

@@ -1,0 +1,356 @@
+/**
+\mainpage Lakeshore 336 EPICS Support Module
+\author Matthew Pearson
+\date July 2010
+
+\section intro_sec Introduction
+
+EPICS support module for the Lakeshore 336 controller.
+
+The user manual can be found at: \ref user_manual<BR>
+If any hardware setup is needed, refer to: \ref hardware_config
+
+**/
+
+/**
+\page build_instructions Build Instructions
+
+There is an example IOC in the support module, that demonstrates how to build an IOC that uses it. There is also a scrip that will launch a GUI.
+
+**/
+
+/**
+\page user_manual User Manual
+
+\section epics_user_guide How to use the EPICS software
+
+\subsection main_screen The main top level GUI
+
+The main EPICS user interface screen for the Lakeshore displays the 
+temperature and raw voltage readbacks. There are two buttons that link
+to screens that enable control of the commonly needed PID loop 1 and loop 2 parameters.
+
+For detailed instructions on each parameter, see the Lakeshore user manual,
+which can be found at the bottom of this page: \ref link_outside
+
+\subsection setparameters The parameters set/read by EPICS
+
+<table border="1">
+<tr>
+<td><b>PV</b></td>
+<td><b>Name</b></td>
+<td><b>Description</b></td>
+<td><b>Read Only</b></td>
+</tr>
+<tr>
+<td><i>beamline</i>:KRDG0</td>
+<td>Channel A Temperature</td>
+<td>Read temperature on channel A in kelvin</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td><i>beamline</i>:KRDG1</td>
+<td>Channel B Temperature</td>
+<td>Read temperature on channel B in kelvin</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td><i>beamline</i>:KRDG2</td>
+<td>Channel C Temperature</td>
+<td>Read temperature on channel C in kelvin</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td><i>beamline</i>:KRDG3</td>
+<td>Channel D Temperature</td>
+<td>Read temperature on channel D in kelvin</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td><i>beamline</i>:SRDG0</td>
+<td>Channel A Voltage</td>
+<td>Read voltage on channel A</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td><i>beamline</i>:SRDG1</td>
+<td>Channel B Voltage</td>
+<td>Read voltage on channel B</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td><i>beamline</i>:SRDG2</td>
+<td>Channel C Voltage</td>
+<td>Read voltage on channel C</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td><i>beamline</i>:SRDG3</td>
+<td>Channel D Voltage</td>
+<td>Read voltage on channel D</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td><i>beamline</i>:ID</td>
+<td>Device ID</td>
+<td>Device ID string *IDN?</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td><i>beamline</i>:FIRMWARE:VERSION</td>
+<td>Firmware Version</td>
+<td>Device firmware version parsed from the identification string</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td><i>beamline</i>:DISABLE</td>
+<td>Disable Comms</td>
+<td>Stop EPICS from setting or reading parameters. 0=Enabled, 1=Disabled</td>
+<td>No</td>
+</tr>
+</table> 
+
+The following parameters are control loop dependent. The <i>loop</i> is either 1 or 2, meaning
+control loop 1 or control loop 2.
+
+Set parameters:
+
+<table border="1">
+<tr>
+<td><b>PV</b></td>
+<td><b>Name</b></td>
+<td><b>Description</b></td>
+<td><b>Read Only</b></td>
+</tr>
+<tr>
+<td><i>beamline</i>:SETP_S<i>loop</i></td>
+<td>Setpoint</td>
+<td>Set the desired temperature set point.</td>
+<td>No</td>
+</tr>
+<tr>
+<td><i>beamline</i>:RANGE_S<i>loop</i></td>
+<td>Heater range</td>
+<td>Set the heater range. 0=Off, 1=Low, 2=Medium, 3=High</td>
+<td>No</td>
+</tr>
+<tr>
+<td><i>beamline</i>:RAMP_S<i>loop</i></td>
+<td>Ramprate</td>
+<td>Set the temperature ramp rate.</td>
+<td>No</td>
+</tr>
+<tr>
+<td><i>beamline</i>:RAMPST_S<i>loop</i></td>
+<td>Ramp Status</td>
+<td>Turn the ramp on or off. 0=Off, 1=On</td>
+<td>No</td>
+</tr>
+<tr>
+<td><i>beamline</i>:MOUT_S<i>loop</i></td>
+<td>Manual Output</td>
+<td>In open loop mode, set the manual power output (in percentage of max power).</td>
+<td>No</td>
+</tr>
+<tr>
+<td><i>beamline</i>:P_S<i>loop</i></td>
+<td>Proportional Gain</td>
+<td>Set the proportional gain.</td>
+<td>No</td>
+</tr>
+<tr>
+<td><i>beamline</i>:I_S<i>loop</i></td>
+<td>Integral Gain</td>
+<td>Set the integral gain.</td>
+<td>No</td>
+</tr>
+<tr>
+<td><i>beamline</i>:D_S<i>loop</i></td>
+<td>Derivative Gain</td>
+<td>Set the derivative gain.</td>
+<td>No</td>
+</tr>
+<tr>
+<td><i>beamline</i>:OMMODE_S<i>loop</i></td>
+<td>Control loop mode</td>
+<td>Set the control loop mode. 0=Off, 1=PID, 2=Zone, 3=Open loop, 4=Monitor out, 5=Warmup supply.</td>
+<td>No</td>
+</tr>
+<tr>
+<td><i>beamline</i>:OMINPUT_S<i>loop</i></td>
+<td>Control loop input</td>
+<td>Set the sensor input to this control loop.</td>
+<td>No</td>
+</tr>
+<tr>
+<td><i>beamline</i>:OMPE_S<i>loop</i></td>
+<td>Control loop power up enable</td>
+<td>Set the power up enable mode of this control loop. The control loop will output power at power up if this is enabled.</td>
+<td>No</td>
+</tr>
+<tr>
+<td><i>beamline</i>:TUNEMODE_S<i>loop</i></td>
+<td>Auto tune mode</td>
+<td>Set the mode in which to operate auto tuning. 0=P Only, 1=P and I, 2=P, I and D.</td>
+<td>No</td>
+</tr>
+<tr>
+<td><i>beamline</i>:TUNESTART<i>loop</i></td>
+<td>Start auto tune.</td>
+<td>Start an auto tune process.</td>
+<td>No</td>
+</tr>
+</table>
+
+Read only control loop parameters:
+
+<table border="1">
+<tr>
+<td><b>PV</b></td>
+<td><b>Name</b></td>
+<td><b>Description</b></td>
+<td><b>Read Only</b></td>
+</tr>
+<tr>
+<td><i>beamline</i>:HTR<i>loop</i></td>
+<td>Heater power.</td>
+<td>Read the heater power output.</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td><i>beamline</i>:SETP<i>loop</i></td>
+<td>Current setpoint.</td>
+<td>Read the current setpoint. This changes during a ramp process.</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td><i>beamline</i>:RANGE<i>loop</i></td>
+<td>Heater range.</td>
+<td>Read the heater power output range.</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td><i>beamline</i>:RAMP<i>loop</i></td>
+<td>Ramp rate.</td>
+<td>Read the ramp rate.</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td><i>beamline</i>:RAMPST<i>loop</i></td>
+<td>Ramp status.</td>
+<td>Read the ramp status. 0=Off, 1=On</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td><i>beamline</i>:MOUT<i>loop</i></td>
+<td>Manual output.</td>
+<td>Read the current manual heater output (in percent of max power)</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td><i>beamline</i>:P<i>loop</i></td>
+<td>Proportional gain.</td>
+<td>Read the proportional gain.</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td><i>beamline</i>:I<i>loop</i></td>
+<td>Integral gain.</td>
+<td>Read the integral gain.</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td><i>beamline</i>:D<i>loop</i></td>
+<td>Derivative gain.</td>
+<td>Read the derivative gain.</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td><i>beamline</i>:OMMODE<i>loop</i></td>
+<td>Control loop mode.</td>
+<td>Read the mode this control loop is in. 0=Off, 1=PID, 2=Zone, 3=Open loop, 4=Monitor out, 5=Warmup supply.</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td><i>beamline</i>:OMINPUT<i>loop</i></td>
+<td>Control loop input.</td>
+<td>Read the sensor input that this control loop is using.</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td><i>beamline</i>:OMPE<i>loop</i></td>
+<td>Power up enable.</td>
+<td>Read the control loop power up enable mode.</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td><i>beamline</i>:TUNEST<i>loop</i></td>
+<td>Auto tuning status.</td>
+<td>Read the current status and stage of the auto tuning process. There are 4 numbers. The first one is the 
+tuning status (0=No tuning, 1=Active tuning). The second is the control loop being tuned (1 or 2). 
+The third is the error status of the last tune (0=No error, 1=Error). The forth is the stage of the current tune, or the stage that the last tune failed (see manual for details).</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td><i>beamline</i>:TUNESTSUCCESS<i>loop</i></td>
+<td>Auto tuning status.</td>
+<td>This PV is a seperate PV representing the auto tuning error/no error in the TUNEST PV. 0=No error, 1=Error.</td>
+<td>Yes</td>
+</tr>
+</table>
+
+\section link_outside Links to manufacturer documentation
+
+User Manual Lakeshore 336 unit:
+
+<ul>
+<li>
+<a href=http://diamdocs/sites/default/TECHNICAL%20DIVISION%20(TEC)/Controls%20and%20Interlocks%20CTRL/Supplier%20Documentation/Lakeshore/336_Manual%20(rev1.3).pdf>Lakeshore 336 User Manual PDF (rev 1.3, on DLS Sharepoint)</a> 
+for devices with firmware version 2.1
+</li>
+<li>
+<a href="http://diamdocs/sites/default/TECHNICAL%20DIVISION%20(TEC)/Controls%20and%20Interlocks%20CTRL/Supplier%20Documentation/Lakeshore/336_Manual%20(rev1.7).pdf">Lakeshore 336 User Manual PDF (rev 1.7, on DLS Sharepoint)</a>
+for devices with firmware version 2.4
+</li>
+</ul>
+
+
+
+
+**/
+
+
+/**
+\page release_notes Release Notes
+
+Release 2-4 (October 2013)
+
+Including support for firmware 2.4 that now supports four control loops.
+
+Adding a record to extract firmware version from ID string.
+
+
+\section known_problems Known Problems
+
+\li None
+
+\section todo_tasks To-Do Tasks
+
+\li None
+
+**/
+
+/**
+\page hardware_config Hardware & Comms Configuration
+
+\section hardware_configuration Hardware Configuration
+
+\li None
+
+\section comms_config Comms Configuration for Control
+
+The 336 has an ethernet port. Using the front panel it is simple to configure the IP address.
+
+The software was developed using Ethernet comms. The serial port (via the USB connector), or the GPIB port were not tested.
+
+**/
